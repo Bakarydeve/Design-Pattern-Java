@@ -400,6 +400,16 @@ public class GarageVelo implements Subject {
       }
   }
 
+  public void updateVelo(Velo updatedVelo) {
+      for (int i = 0; i < velos.size(); i++) {
+          if (velos.get(i).getNumeroSerie() == updatedVelo.getNumeroSerie()) {
+              velos.set(i, updatedVelo);
+              break;
+          }
+      }
+      notifyObservers();
+  }
+  
   // Méthodes pour ajouter, supprimer et mettre à jour les vélos
   public void ajouterVelo(String modele, Integer puissance, String marqueBatterie, String marquePneu) {
       Velo v = usine.creer_velo(modele, puissance, marqueBatterie, marquePneu);
