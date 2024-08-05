@@ -1,51 +1,74 @@
 package interfacevelo;
 
-import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 
 import facade.GarageVelo;
-import observer.Observer;
 import velo.Velo;
 
-public class VeloDetailUI extends JFrame implements Observer {
-    private Velo velo;
+public class VeloDetailUI extends JFrame {
     private GarageVelo garageVelo;
-    private JTextArea textArea;
+    private Velo velo;
 
-    public VeloDetailUI(Velo velo, GarageVelo garageVelo) {
-        this.velo = velo;
+    private JTextField modeleField;
+    private JTextField puissanceField;
+    private JTextField marqueBatterieField;
+    private JTextField marquePneuField;
+    private JButton saveButton;
+
+    public VeloDetailUI(GarageVelo garageVelo, Velo velo) {
         this.garageVelo = garageVelo;
-        garageVelo.addObserver(this);
+        this.velo = velo;
 
         setTitle("Détails du Vélo");
-        setSize(500, 400);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(400, 300);
+        setLayout(new GridLayout(5, 2));
 
-        textArea = new JTextArea();
-        textArea.setEditable(false);
-        add(new JScrollPane(textArea), BorderLayout.CENTER);
+        add(new JLabel("Modèle:"));
+        modeleField = new JTextField(velo.getModele());
+        add(modeleField);
 
-        update();
+        add(new JLabel("Puissance:"));
+        puissanceField = new JTextField(String.valueOf(velo.getBatterie().getPuissance()));
+        add(puissanceField);
+
+        add(new JLabel("Marque Batterie:"));
+        marqueBatterieField = new JTextField(velo.getBatterie().getMarque().getMarque());
+        add(marqueBatterieField);
+
+        add(new JLabel("Marque Pneu:"));
+        marquePneuField = new JTextField(velo.getPneu_avant().getMarque().getMarque());
+        add(marquePneuField);
+
+        saveButton = new JButton("Sauvegarder");
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (velo != null) {
+                    velo.getBatterie().setPuissance(Integer.parseInt(puissanceField.getText()));
+                    velo.getBatterie().getMarque().setMarque(marqueBatterieField.getText());
+                    velo.getPneu_avant().getMarque().setMarque(marquePneuField.getText());
+                    velo.getPneu_arriere().getMarque().setMarque(marquePneuField.getText());
+                    velo.setModele(modeleField.getText());
+                    garageVelo.changerBatterieVeloCourant(Integer.parseInt(puissanceField.getText()));
+                }
+                dispose();
+            }
+        });
+        add(saveButton);
     }
 
     public void updateVelo(Velo velo) {
         this.velo = velo;
-        update();
-    }
-
-    @Override
-    public void update() {
-        if (velo != null) {
-            textArea.setText("");
-            textArea.append("Velo: " + velo.getNumeroSerie() + "\n");
-            textArea.append("Modele: " + velo.getModele() + "\n");
-            textArea.append("Marque: " + velo.getMarque().getMarque() + "\n");
-            textArea.append("Pneu Avant: Marque: " + velo.getPneu_avant().getMarque().getMarque() + ", Largeur: " + velo.getPneu_avant().getLargeur() + "mm, Tubeless: " + velo.getPneu_avant().getEstTubeless() + "\n");
-            textArea.append("Pneu Arrière: Marque: " + velo.getPneu_arriere().getMarque().getMarque() + ", Largeur: " + velo.getPneu_arriere().getLargeur() + "mm, Tubeless: " + velo.getPneu_arriere().getEstTubeless() + "\n");
-            textArea.append("Batterie: Marque: " + velo.getBatterie().getMarque().getMarque() + ", Puissance: " + velo.getBatterie().getPuissance() + "W\n");
-        }
+        modeleField.setText(velo.getModele());
+        puissanceField.setText(String.valueOf(velo.getBatterie().getPuissance()));
+        marqueBatterieField.setText(velo.getBatterie().getMarque().getMarque());
+        marquePneuField.setText(velo.getPneu_avant().getMarque().getMarque());
     }
 }
